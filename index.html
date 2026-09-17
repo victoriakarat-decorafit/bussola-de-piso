@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Quiz para descobrir o piso ideal para o seu espaço, feito para a Decorafit.">
+<title>Bússola de Piso</title>
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="apple-touch-icon" href="img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg: #f7f5f2;
+    --grain-a: #ecebea;
+    --surface: #f68859;
+    --surface-2: #ebe9e9;
+    --line: #d6d4d4;
+    --ink: #ffffff;
+    --ink-soft: #ffe8de;
+    --accent: #cc734e;
+    --accent-ink: #2b1810;
+    --accent-soft: #ffe3d6;
+    --shadow: 0 1px 2px rgba(43,33,24,.06), 0 12px 28px -14px rgba(43,33,24,.22);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg: #f7f5f2;
+      --grain-a: #ecebea;
+      --surface: #f68859;
+      --surface-2: #4a3327;
+      --line: #8a4f34;
+      --ink: #ffffff;
+      --ink-soft: #ffe8de;
+      --accent: #cc734e;
+      --accent-ink: #2b1810;
+      --accent-soft: #4a3226;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 16px 32px -16px rgba(0,0,0,.6);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg: #f7f5f2;
+    --grain-a: #ecebea;
+    --surface: #f68859;
+    --surface-2: #4a3327;
+    --line: #8a4f34;
+    --ink: #ffffff;
+    --ink-soft: #ffe8de;
+    --accent: #cc734e;
+    --accent-ink: #2b1810;
+    --accent-soft: #4a3226;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 16px 32px -16px rgba(0,0,0,.6);
+    color-scheme: dark;
+  }
+  *{ box-sizing: border-box; }
+  html, body{ margin: 0; padding: 0; touch-action: manipulation; }
+  img{ max-width: 100%; }
+  [hidden]{ display: none !important; }
+  body{
+    background:
+      radial-gradient(circle at 12% 8%, var(--grain-a) 0, transparent 40%),
+      radial-gradient(circle at 88% 92%, var(--grain-a) 0, transparent 42%),
+      var(--bg);
+    color: var(--ink);
+    font-family: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+    font-weight: 700;
+    padding: 32px 16px;
+    padding-block: 32px;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  h1,h2,h3,.display{
+    font-family: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    margin: 0;
+  }
+  .wrap{ width: 100%; max-width: 560px; }
+
+  header.brand{
+    display:flex; align-items:center; justify-content:space-between;
+    flex-wrap: wrap; gap: 4px 10px;
+    margin-bottom: 18px; padding-inline: 4px;
+  }
+  .brand-logo{ height: clamp(9px, 2.6vw, 14px); width: auto; display:block; flex-shrink: 0; }
+  .brand-ig{
+    font-size: .8rem; color: #7a6f65; text-decoration:none;
+    border-bottom: 1px solid transparent; white-space: nowrap;
+  }
+  .brand-ig:hover{ border-color: #7a6f65; }
+
+  .card{
+    background: var(--surface);
+    border: none;
+    border-radius: 22px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .progress-track{
+    height: 5px; background: var(--surface-2);
+    position: relative;
+  }
+  .progress-fill{
+    height: 100%; background: var(--accent);
+    width: 0%; transition: width .35s ease;
+  }
+  @media (prefers-reduced-motion: reduce){ .progress-fill{ transition:none; } }
+
+  .pane{ padding: 30px 28px 32px; }
+  @media (max-width: 420px){ .pane{ padding: 24px 18px 26px; } }
+
+  [hidden]{ display:none !important; }
+
+  .eyebrow{
+    display: inline-block;
+    font-size: .68rem; text-transform: uppercase; letter-spacing: .12em;
+    color: #f7f5f2; font-weight: 700; margin: 0 0 14px;
+    background: #262D3B; padding: 6px 14px; border-radius: 999px;
+  }
+
+  /* Intro */
+  .intro-title{ font-size: clamp(1.7rem, 5vw + .4rem, 2.35rem); line-height: 1.12; }
+  .intro-sub{ color: var(--ink-soft); font-size: .98rem; line-height:1.55; margin-top: 12px; max-width: 46ch; }
+  .intro-hero{
+    width:100%; aspect-ratio: 4 / 3; border-radius: 16px; overflow:hidden;
+    box-shadow: var(--shadow); margin-top: 20px; margin-bottom: 24px;
+  }
+  .intro-hero img{ display:block; width:100%; height:100%; object-fit:cover; }
+
+  /* Buttons */
+  .btn{
+    appearance:none; border:none; cursor:pointer;
+    font-family: "Montserrat", sans-serif; font-weight: 700; font-size: .96rem;
+    padding: 14px 22px; border-radius: 999px;
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    text-decoration:none;
+  }
+  .btn-primary{ background: var(--accent); color: #f7f5f2; width:100%; transition: background .15s ease, color .15s ease; }
+  .btn-primary:hover, .btn-primary:active{ background: #262D3B; color: #ffffff; }
+  .btn-primary:disabled{ opacity:.5; cursor:not-allowed; filter:none; }
+  .btn-ghost{
+    background: transparent; color: #262D3B; border: 1.5px solid #262D3B;
+    width:100%; transition: background .15s ease, color .15s ease;
+  }
+  .btn-ghost:hover{ background: #262D3B; color: #f7f5f2; }
+  .btn-text{
+    background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.4);
+    border-radius: 999px; color: #ffffff; font-family:"Montserrat",sans-serif;
+    font-size:.82rem; font-weight:700;
+    text-decoration: none; cursor:pointer; padding: 9px 16px;
+    transition: background .15s ease, border-color .15s ease;
+  }
+  .btn-text:hover{ background: rgba(255,255,255,.26); border-color: rgba(255,255,255,.6); }
+  .btn:focus-visible, .opt:focus-visible, .btn-text:focus-visible, a:focus-visible, input:focus-visible{
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
+
+  /* Questions */
+  .q-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom: 6px; }
+  .q-back{
+    appearance:none; background:none; border:none; cursor:pointer; padding:0;
+    font-family:"Montserrat",sans-serif; font-size:.82rem; font-weight:700;
+    color: var(--ink-soft); transition: color .15s ease;
+  }
+  .q-back:hover{ color: var(--ink); }
+  .q-back[hidden]{ display:none; }
+  #leadBack{ display:block; margin-bottom: 10px; }
+  .q-count{ font-size:.78rem; color: var(--ink-soft); margin-bottom: 6px; font-variant-numeric: tabular-nums; }
+  .q-text{ font-size: 1.28rem; line-height: 1.3; margin-bottom: 20px; }
+  .opts{ display:flex; flex-direction:column; gap:10px; }
+  .opt{
+    text-align:center; width:100%; background: var(--accent); border: 1px solid var(--accent);
+    border-radius: 14px; padding: 15px 16px; font-family:"Montserrat",sans-serif;
+    font-size: 1rem; font-weight: 700; color: #f7f5f2; cursor:pointer; line-height:1.4;
+    transition: border-color .15s ease, background .15s ease, color .15s ease, transform .1s ease;
+  }
+  .opt:hover{ border-color: #262D3B; background: #262D3B; color: #ffffff; }
+  .opt.selected{ border-color: #262D3B; background: #262D3B; color: #ffffff; }
+  @media (prefers-reduced-motion: no-preference){ .opt:active{ transform: scale(.99); } }
+
+  .nav-row{ display:flex; justify-content:flex-start; margin-top: 18px; }
+
+  /* Lead form */
+  .lead-title{ font-size: 1.5rem; margin-bottom: 8px; }
+  .lead-sub{ color: var(--ink-soft); font-size:.92rem; margin-bottom: 22px; line-height:1.5; }
+  .field{ margin-bottom: 16px; }
+  .field label{ display:block; font-size:.82rem; font-weight:700; margin-bottom:6px; }
+  .field input{
+    width:100%; padding: 13px 14px; border-radius: 12px; border: none;
+    background: var(--accent); color: var(--ink); font-family:"Montserrat",sans-serif; font-size: 16px;
+  }
+  .field small{ display:block; color: var(--ink-soft); font-size: .74rem; margin-top: 5px; }
+
+  /* Result */
+  .result-eyebrow{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .result-hero{
+    width:100%; aspect-ratio: 4 / 3; border-radius: 16px; overflow:hidden;
+    border: none; box-shadow: var(--shadow); margin-top: 10px;
+  }
+  .result-hero img{ display:block; width:100%; height:100%; object-fit:cover; }
+  .result-name{ font-size: clamp(1.9rem, 6vw, 2.5rem); margin-top: 18px; }
+  .result-name::after{ content:""; display:block; width:56px; height:5px; border-radius:999px; background:#262D3B; margin-top:12px; }
+  .result-tagline{ font-style: italic; color: #262D3B; margin-top: 6px; font-size: 1.02rem; }
+  .palette{ display:flex; gap:0; margin: 22px 0 6px; width:fit-content; }
+  .palette span{ width:40px; height:40px; border-radius: 0; border:none; }
+  .result-desc{ margin-top: 16px; line-height:1.65; color: var(--ink); font-size: .98rem; }
+  .tips-title{ font-size: .78rem; text-transform:uppercase; letter-spacing:.1em; color: var(--ink-soft); margin: 26px 0 12px; font-weight:700; }
+  .tips{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:14px; counter-reset: tipnum; }
+  .tips li{ display:flex; gap:12px; font-size:.94rem; line-height:1.5; align-items:flex-start; }
+  .tips li::before{
+    counter-increment: tipnum; content: counter(tipnum);
+    flex:0 0 auto; width:24px; height:24px; margin-top:1px; border-radius:50%;
+    background:#262D3B; color:#f7f5f2; font-size:.72rem; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .cta-stack{ display:flex; flex-direction:column; gap:10px; margin-top: 26px; }
+  .foot-links{ display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top: 16px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="brand">
+    <img class="brand-logo" src="img/logo-decorafit.png" alt="Decorafit">
+    <a class="brand-ig" href="https://instagram.com/decorafit_br" target="_blank" rel="noopener">@decorafit_br</a>
+  </header>
+
+  <div class="card">
+    <div class="progress-track" id="progressTrack" hidden>
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <!-- INTRO -->
+    <section class="pane" id="screen-intro">
+      <p class="eyebrow">Quiz rápido · 2 minutos</p>
+      <h1 class="intro-title">Qual é o piso ideal para o seu espaço?</h1>
+      <p class="intro-sub">Responda 7 perguntas sobre o seu ambiente, rotina e gosto visual, e descubra qual dos 3 tipos de piso combina com você.</p>
+      <div class="intro-hero">
+        <img src="img/intro-hero.jpg" alt="Colagem de ambientes com diferentes tipos de piso, representando a busca pelo piso ideal" loading="lazy">
+      </div>
+      <button class="btn btn-primary" id="startBtn">Começar o quiz →</button>
+    </section>
+
+    <!-- QUESTIONS -->
+    <section class="pane" id="screen-question" hidden>
+      <div class="q-head">
+        <button type="button" class="q-back" id="qBack">← Voltar</button>
+        <p class="q-count" id="qCount"></p>
+      </div>
+      <h2 class="q-text" id="qText"></h2>
+      <div class="opts" id="qOpts"></div>
+    </section>
+
+    <!-- LEAD FORM -->
+    <section class="pane" id="screen-lead" hidden>
+      <button type="button" class="q-back" id="leadBack">← Voltar</button>
+      <p class="eyebrow">Quase lá</p>
+      <h2 class="lead-title">Seu piso ideal está pronto!</h2>
+      <p class="lead-sub">Deixe seus dados para ver o resultado agora — e receber mais conteúdos sobre reforma e decoração.</p>
+      <form id="leadForm">
+        <div class="field">
+          <label for="leadName">Nome</label>
+          <input type="text" id="leadName" name="leadName" autocomplete="name" placeholder="Como podemos te chamar?" required>
+        </div>
+        <div class="field">
+          <label for="leadEmail">E-mail</label>
+          <input type="email" id="leadEmail" name="leadEmail" autocomplete="email" placeholder="seu@email.com" required>
+        </div>
+        <div class="field">
+          <label for="leadPhone">WhatsApp</label>
+          <input type="tel" id="leadPhone" name="leadPhone" inputmode="tel" autocomplete="tel" placeholder="(11) 91234-5678" required>
+        </div>
+        <button class="btn btn-primary" type="submit">Ver meu piso ideal →</button>
+      </form>
+    </section>
+
+    <!-- RESULT -->
+    <section class="pane" id="screen-result" hidden>
+      <div class="result-eyebrow">
+        <p class="eyebrow" style="margin:0">Seu piso ideal é</p>
+      </div>
+      <div class="result-hero" id="rHero"></div>
+      <div class="palette" id="rPalette" aria-hidden="true"></div>
+      <h2 class="result-name" id="rName"></h2>
+      <p class="result-tagline" id="rTagline"></p>
+      <p class="result-desc" id="rDesc"></p>
+      <p class="tips-title">Como aplicar no seu espaço</p>
+      <ul class="tips" id="rTips"></ul>
+      <div class="cta-stack">
+        <a class="btn btn-primary" id="rCta" href="#" target="_blank" rel="noopener">Quero reformar meu piso assim →</a>
+        <button class="btn btn-ghost" id="rShare" type="button">Compartilhar este quiz</button>
+      </div>
+      <div class="foot-links">
+        <button class="btn-text" id="rRestart" type="button">Refazer o quiz</button>
+        <a class="btn-text" href="https://instagram.com/decorafit_br" target="_blank" rel="noopener">Seguir @decorafit_br</a>
+      </div>
+    </section>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var SITE_URL = "https://campanha.decorafit.com.br/";
+  var LEADS_ENDPOINT = "https://script.google.com/macros/s/AKfycbx3qduzy6yMw5aUOBvMXDnwPeg3Li1aUep0XjENa8fribxZ3R1WvWzszrF14KNyu2xQ/exec";
+  var STYLE_ORDER = ["porcelanato","vinilico","hidraulico"];
+
+  var STYLES = {
+    vinilico: {
+      name: "Piso Vinílico",
+      tagline: "Conforto sob os pés, praticidade no dia a dia.",
+      palette: ["#e8d3b0","#b98a5a","#4a3524"],
+      desc: "Você valoriza a praticidade sem abrir mão do conforto. O piso vinílico é macio, quentinho e fácil de instalar — perfeito para quem quer transformar o ambiente rápido, com resultado bonito e sem dor de cabeça.",
+      tips: [
+        "Escolha réguas ou placas com sistema de encaixe (click) para instalar sem necessidade de obra.",
+        "Prefira tons de madeira clara para ampliar visualmente o ambiente.",
+        "Use um pano levemente umedecido na limpeza — evite excesso de água."
+      ],
+      img: "img/vinilico.jpg",
+      imgAlt: "Ambiente com piso vinílico em tom de madeira clara, aconchegante e confortável"
+    },
+    porcelanato: {
+      name: "Piso Porcelanato",
+      tagline: "Elegância e resistência para qualquer cômodo.",
+      palette: ["#e9e5dd","#b3ada0","#403c36"],
+      desc: "Você busca durabilidade e sofisticação. O porcelanato aguenta alto tráfego, resiste à água e ainda imita mármore, cimento queimado ou madeira — tudo isso com manutenção mínima.",
+      tips: [
+        "Opte por peças de grande formato para reduzir rejuntes e valorizar o ambiente.",
+        "Escolha acabamento acetinado para equilibrar elegância e segurança ao pisar.",
+        "Use rejunte na cor do porcelanato para um efeito mais contínuo e clean."
+      ],
+      img: "img/porcelanato.jpg",
+      imgAlt: "Ambiente com piso porcelanato acetinado imitando mármore claro"
+    },
+    hidraulico: {
+      name: "Ladrilho Hidráulico",
+      tagline: "Personalidade e cor em cada detalhe.",
+      palette: ["#2c4a5e","#c9a24b","#b0503a"],
+      desc: "Você não tem medo de ousar. O ladrilho hidráulico traz estampas geométricas e cores vibrantes que transformam qualquer canto em ponto de destaque — perfeito para quem quer um ambiente com a própria cara.",
+      tips: [
+        "Use em áreas específicas (cozinha, varanda, banheiro) para criar um ponto focal sem sobrecarregar o espaço.",
+        "Combine com paredes e móveis neutros para o estampado ser o protagonista.",
+        "Aplique um selador para proteger as cores e facilitar a limpeza."
+      ],
+      img: "img/hidraulico.jpg",
+      imgAlt: "Ambiente com ladrilho hidráulico colorido e estampado em destaque"
+    }
+  };
+
+  var QUESTIONS = [
+    {
+      text: "Seu ambiente tem contato direto com água?",
+      opts: [
+        { label: "Sim", weights: { porcelanato: 2, hidraulico: 2 } },
+        { label: "Não", weights: { vinilico: 2 } }
+      ]
+    },
+    {
+      text: "Como você gosta de limpar o seu piso?",
+      opts: [
+        { label: "Gosto de lavar e esfregar", weights: { porcelanato: 2, hidraulico: 2 } },
+        { label: "Só passar um pano já tá ótimo", weights: { vinilico: 2 } }
+      ]
+    },
+    {
+      text: "Como você quer se sentir pisando descalço?",
+      opts: [
+        { label: "Gosto de piso geladinho ao toque", weights: { porcelanato: 2, hidraulico: 2 } },
+        { label: "Prefiro um piso confortável ao toque", weights: { vinilico: 2 } }
+      ]
+    },
+    {
+      text: "Qual piso te agrada mais?",
+      opts: [
+        { label: "Algo bonito e mais discreto", weights: { porcelanato: 2 } },
+        { label: "Colorido, de muita personalidade", weights: { hidraulico: 2 } }
+      ]
+    },
+    {
+      text: "Como está seu bolso pra essa reforma?",
+      opts: [
+        { label: "Posso gastar um pouco mais", weights: { porcelanato: 2, hidraulico: 2 } },
+        { label: "Quero economizar sem perder o visual", weights: { vinilico: 2 } }
+      ]
+    },
+    {
+      text: "Você tem pet em casa?",
+      opts: [
+        { label: "Sim, tenho!", weights: { porcelanato: 2 } },
+        { label: "Não", weights: { vinilico: 2 } }
+      ]
+    },
+    {
+      text: "Você gosta de estampas e desenhos no chão?",
+      opts: [
+        { label: "Sim, adoro um piso com desenho", weights: { hidraulico: 3 } },
+        { label: "Prefiro liso, sem estampa", weights: { vinilico: 2 } }
+      ]
+    }
+  ];
+
+  var state = {
+    qIndex: 0,
+    scores: {},
+    name: "",
+    history: []
+  };
+
+  var screens = {
+    intro: document.getElementById("screen-intro"),
+    question: document.getElementById("screen-question"),
+    lead: document.getElementById("screen-lead"),
+    result: document.getElementById("screen-result")
+  };
+  var progressTrack = document.getElementById("progressTrack");
+  var progressFill = document.getElementById("progressFill");
+
+  function showScreen(name){
+    Object.keys(screens).forEach(function(k){ screens[k].hidden = (k !== name); });
+    progressTrack.hidden = (name !== "question");
+    window.scrollTo({ top: 0, behavior: "instant" in window.scrollTo ? "instant" : "auto" });
+  }
+
+  function resetState(){
+    state.qIndex = 0;
+    state.scores = {};
+    state.history = [];
+    STYLE_ORDER.forEach(function(s){ state.scores[s] = 0; });
+  }
+
+  function renderQuestion(){
+    var q = QUESTIONS[state.qIndex];
+    document.getElementById("qBack").hidden = (state.qIndex === 0);
+    document.getElementById("qCount").textContent = "Pergunta " + (state.qIndex + 1) + " de " + QUESTIONS.length;
+    document.getElementById("qText").textContent = q.text;
+    progressFill.style.width = Math.round((state.qIndex / QUESTIONS.length) * 100) + "%";
+
+    var optsWrap = document.getElementById("qOpts");
+    optsWrap.innerHTML = "";
+    q.opts.forEach(function(opt){
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "opt";
+      btn.textContent = opt.label;
+      btn.addEventListener("click", function(){ selectOption(opt.weights); });
+      optsWrap.appendChild(btn);
+    });
+
+    showScreen("question");
+  }
+
+  function selectOption(weights){
+    state.history.push(weights);
+    Object.keys(weights).forEach(function(styleKey){
+      state.scores[styleKey] = (state.scores[styleKey] || 0) + weights[styleKey];
+    });
+    state.qIndex += 1;
+    if (state.qIndex < QUESTIONS.length){
+      renderQuestion();
+    } else {
+      progressFill.style.width = "100%";
+      showScreen("lead");
+    }
+  }
+
+  function goBack(){
+    if (state.qIndex === 0) return;
+    var weights = state.history.pop();
+    Object.keys(weights).forEach(function(styleKey){
+      state.scores[styleKey] -= weights[styleKey];
+    });
+    state.qIndex -= 1;
+    renderQuestion();
+  }
+
+  function computeResult(){
+    var best = STYLE_ORDER[0];
+    var bestScore = -1;
+    STYLE_ORDER.forEach(function(key){
+      var score = state.scores[key] || 0;
+      if (score > bestScore){
+        bestScore = score;
+        best = key;
+      }
+    });
+    return best;
+  }
+
+  function renderResult(){
+    var key = computeResult();
+    var style = STYLES[key];
+
+    document.getElementById("rHero").innerHTML =
+      '<img src="' + style.img + '" alt="' + style.imgAlt + '" loading="lazy">';
+    document.getElementById("rName").textContent = style.name;
+    document.getElementById("rTagline").textContent = style.tagline;
+    document.getElementById("rDesc").textContent =
+      (state.name ? state.name + ", este" : "Este") + " é o seu piso ideal: " + style.desc;
+
+    var paletteWrap = document.getElementById("rPalette");
+    paletteWrap.innerHTML = "";
+    style.palette.forEach(function(hex){
+      var sw = document.createElement("span");
+      sw.style.background = hex;
+      paletteWrap.appendChild(sw);
+    });
+
+    var tipsWrap = document.getElementById("rTips");
+    tipsWrap.innerHTML = "";
+    style.tips.forEach(function(tip){
+      var li = document.createElement("li");
+      li.textContent = tip;
+      tipsWrap.appendChild(li);
+    });
+
+    document.getElementById("rCta").href = SITE_URL;
+
+    showScreen("result");
+  }
+
+  document.getElementById("qBack").addEventListener("click", goBack);
+  document.getElementById("leadBack").addEventListener("click", function(){
+    goBack();
+  });
+
+  document.getElementById("startBtn").addEventListener("click", function(){
+    resetState();
+    renderQuestion();
+  });
+
+  var VALID_DDD = ["11","12","13","14","15","16","17","18","19",
+    "21","22","24","27","28",
+    "31","32","33","34","35","37","38",
+    "41","42","43","44","45","46","47","48","49",
+    "51","53","54","55",
+    "61","62","63","64","65","66","67","68","69",
+    "71","73","74","75","77","79",
+    "81","82","83","84","85","86","87","88","89",
+    "91","92","93","94","95","96","97","98","99"];
+
+  function hasRepeatedOrSequentialDigits(digits){
+    if (/^(\d)\1+$/.test(digits)) return true;
+    var asc = true, desc = true;
+    for (var i = 1; i < digits.length; i++){
+      var a = digits.charCodeAt(i - 1) - 48;
+      var b = digits.charCodeAt(i) - 48;
+      var diff = (b - a + 10) % 10;
+      if (diff !== 1) asc = false;
+      if (diff !== 9) desc = false;
+    }
+    return asc || desc;
+  }
+
+  function isValidPhone(digits){
+    if (digits.length < 10 || digits.length > 11) return false;
+    var ddd = digits.slice(0, 2);
+    if (VALID_DDD.indexOf(ddd) === -1) return false;
+    var local = digits.slice(2);
+    if (hasRepeatedOrSequentialDigits(local)) return false;
+    if (digits.length === 11 && local.charAt(0) !== "9") return false;
+    if (digits.length === 10 && (local.charAt(0) === "0" || local.charAt(0) === "1" || local.charAt(0) === "9")) return false;
+    return true;
+  }
+
+  var EMAIL_RE = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+
+  function isValidEmail(value){
+    if (!EMAIL_RE.test(value)) return false;
+    var parts = value.split("@");
+    var local = parts[0];
+    if (/^(.)\1+$/.test(local)) return false;
+    var domainParts = parts[1].split(".");
+    var tld = domainParts[domainParts.length - 1];
+    if (tld.length < 2 || !/^[a-zA-Z]+$/.test(tld)) return false;
+    return true;
+  }
+
+  var leadEmailEl = document.getElementById("leadEmail");
+  leadEmailEl.addEventListener("input", function(){ leadEmailEl.setCustomValidity(""); });
+
+  var leadPhoneEl = document.getElementById("leadPhone");
+  leadPhoneEl.addEventListener("input", function(){ leadPhoneEl.setCustomValidity(""); });
+
+  function sendLeadToSheet(nome, email, whatsapp, estilo){
+    if (!LEADS_ENDPOINT) return;
+    fetch(LEADS_ENDPOINT, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ quiz: "piso-ideal", nome: nome, email: email, whatsapp: whatsapp, estilo: estilo })
+    }).catch(function(){});
+  }
+
+  document.getElementById("leadForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var nameEl = document.getElementById("leadName");
+    var emailEl = leadEmailEl;
+    if (!isValidEmail(emailEl.value.trim())) {
+      emailEl.setCustomValidity("Digite um e-mail válido.");
+      emailEl.reportValidity();
+      return;
+    }
+    emailEl.setCustomValidity("");
+    var digits = leadPhoneEl.value.replace(/\D/g, "");
+    if (!isValidPhone(digits)) {
+      leadPhoneEl.setCustomValidity("Digite um WhatsApp válido, com DDD (10 ou 11 dígitos).");
+      leadPhoneEl.reportValidity();
+      return;
+    }
+    leadPhoneEl.setCustomValidity("");
+    var fullName = nameEl.value.trim();
+    state.name = fullName.split(" ")[0] || "";
+    var styleKey = computeResult();
+    var styleName = STYLES[styleKey] ? STYLES[styleKey].name : "";
+    sendLeadToSheet(fullName, emailEl.value.trim(), leadPhoneEl.value.trim(), styleName);
+    renderResult();
+  });
+
+  document.getElementById("rRestart").addEventListener("click", function(){
+    document.getElementById("leadForm").reset();
+    resetState();
+    showScreen("intro");
+  });
+
+  document.getElementById("rShare").addEventListener("click", function(){
+    var key = computeResult();
+    var style = STYLES[key];
+    var text = "Descobri que o piso ideal para o meu espaço é " + style.name + "! Faça o quiz da Decorafit e descubra o seu:";
+    var url = location.href;
+
+    if (navigator.share){
+      navigator.share({ text: text, url: url }).catch(function(){});
+    } else {
+      var fallback = text + " " + url;
+      if (navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(fallback).then(function(){
+          var btn = document.getElementById("rShare");
+          var original = btn.textContent;
+          btn.textContent = "Link copiado!";
+          setTimeout(function(){ btn.textContent = original; }, 1800);
+        }).catch(function(){});
+      }
+    }
+  });
+
+  resetState();
+})();
+</script>
+</body>
+</html>
