@@ -505,8 +505,15 @@
       '<img src="' + style.img + '" alt="' + style.imgAlt + '" loading="lazy">';
     document.getElementById("rName").textContent = style.name;
     document.getElementById("rTagline").textContent = style.tagline;
-    document.getElementById("rDesc").textContent =
-      (state.name ? state.name + ", este" : "Este") + " é o seu piso ideal: " + style.desc;
+    var rDesc = document.getElementById("rDesc");
+    rDesc.innerHTML = "";
+    var descLead = document.createElement("span");
+    descLead.textContent = (state.name ? state.name + ", este" : "Este") + " é o seu piso ideal: ";
+    var descBody = document.createElement("span");
+    descBody.style.fontWeight = "400";
+    descBody.textContent = style.desc;
+    rDesc.appendChild(descLead);
+    rDesc.appendChild(descBody);
 
     var paletteWrap = document.getElementById("rPalette");
     paletteWrap.innerHTML = "";
